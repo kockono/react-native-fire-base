@@ -54,12 +54,12 @@ class EmailAndPassword extends Component {
   render(){
     return (
       <KeyboardAvoidingView behaivor="padding "style={styles.container}>
-        <TextInput placeholder="email" 
+        <TextInput placeholder="Email" 
                    style={styles.input} 
                    value={this.state.email}
                    onChangeText={this.handleEmail}
                    />
-        <TextInput placeholder="password" 
+        <TextInput placeholder="Password" 
                    style={styles.input} 
                    secureTextEntry
                    value={this.state.password}

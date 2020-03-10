@@ -23,23 +23,15 @@ state={
 }
   render (){
   return(
-    <ScrollView>
-    <Card>  
-    {this.state.prductos.map(
-      producto=>(
-        <Prod
-        onCambio={
-            ()=>this.cambio(producto.id)
-        }
-        // producto{producto}
-        />
-      ))
+    <View>
+    <TouchableOpacity style={{padding:20 }} onPress={() => firebase.auth().signOut()}>
+          <Text style={{color: '#1B9CFC'}}>Logout</Text>
+        </TouchableOpacity>
+    </View>
+      )
     }
-    
-    </Card>
-    </ScrollView>);
 }
-}
+
 
 // define your styles
 const styles = StyleSheet.create({
