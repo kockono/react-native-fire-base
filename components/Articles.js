@@ -2,13 +2,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
 import {Card,CardItem, Switch} from 'native-base';
+
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 function HomeScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home!</Text>
+    <View>
+    <TouchableOpacity style={{padding:20 }} onPress={() => firebase.auth().signOut()}>
+          <Text style={{color: '#1B9CFC'}}>Logout</Text>
+        </TouchableOpacity>
+
     </View>
   );
 }
@@ -20,6 +24,34 @@ function SettingsScreen() {
     </View>
   );
 }
+function LogOut({ navigation }) {
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('tabPress', e => {
+        // Prevent default behavior
+        e.preventDefault();
+        firebase.auth().signOut()
+        //Codigo de firebase para logout
+        // Do something manually
+        // ...
+      });
+  
+      return unsubscribe;
+    }, [navigation]);
+  
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Ya cerraste sesion</Text>
+      </View>
+    );
+  }
+
+
+//-------------------
+
+
+// -------------------
+
+
 
 const Tab = createBottomTabNavigator();
 
@@ -41,20 +73,22 @@ state={
 }
   render (){
   return(
-    <View>
-    <TouchableOpacity style={{padding:20 }} onPress={() => firebase.auth().signOut()}>
-          <Text style={{color: '#1B9CFC'}}>Logout</Text>
-        </TouchableOpacity>
+    
+     <Tab.Navigator
+      initialRouteName="Home"
+      tabBarOptions={{
+        activeTintColor: '#e91e63',
+      }}>
+       <Tab.Screen name="Home" component={HomeScreen}  />
+       <Tab.Screen name="Settings" component={SettingsScreen} />
+       <Tab.Screen name="LogOut" component={LogOut} />
 
-    </View>
+      </Tab.Navigator>
       )
     }
 }
 
-    // <Tab.Navigator>
-    //   <Tab.Screen name="Home" component={HomeScreen} />
-    //   <Tab.Screen name="Settings" component={SettingsScreen} />
-    // </Tab.Navigator>
+    
 
 
 // define your styles
