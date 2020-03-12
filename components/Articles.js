@@ -26,25 +26,26 @@ function SettingsScreen() {
 }
 function LogOut({ navigation }) {
     React.useEffect(() => {
-      const unsubscribe = navigation.addListener('tabPress', e => {
+      const logout = navigation.addListener('focus', e => {
         // Prevent default behavior
-        e.preventDefault();
+        //e.preventDefault();
         firebase.auth().signOut()
+        
         //Codigo de firebase para logout
         // Do something manually
         // ...
       });
   
-      return unsubscribe;
+      return logout;
     }, [navigation]);
-  
+    
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Ya cerraste sesion</Text>
+      
       </View>
     );
   }
-
 
 //-------------------
 
@@ -81,7 +82,7 @@ state={
       }}>
        <Tab.Screen name="Home" component={HomeScreen}  />
        <Tab.Screen name="Settings" component={SettingsScreen} />
-       <Tab.Screen name="LogOut" component={LogOut} />
+       <Tab.Screen name="LogOut" component={LogOut}  />
 
       </Tab.Navigator>
       )
