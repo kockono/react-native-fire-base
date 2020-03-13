@@ -1,27 +1,88 @@
 /* eslint-disable no-unused-vars */
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
-import {Card,CardItem, Switch} from 'native-base';
+import {Card, CardItem, Switch, Container, Header, Content, Body, Button, Toast, ListItem, Icon, Left, Right } from 'native-base';
+ 
+
 
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 function HomeScreen() {
   return (
-    <View>
-    <TouchableOpacity style={{padding:20 }} onPress={() => firebase.auth().signOut()}>
-          <Text style={{color: '#1B9CFC'}}>Logout</Text>
-        </TouchableOpacity>
+      <Container>
+        
+        <Content>
+          <Card>
+            <CardItem>
+              <Body>
+                <Text>
+                   Bienvenido A Ventium
 
-    </View>
+                   Seguridad con amabilidad
+
+                   En Construcción  
+                </Text>
+
+              </Body>
+            </CardItem>
+          </Card>
+        </Content>
+      </Container>
   );
 }
 
 function SettingsScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
+  <Container>
+          <Container>
+        
+        <Content>
+          <ListItem icon>
+            <Left>
+              <Button style={{ backgroundColor: "red" }}>
+                <Icon active name="notifications" />
+              </Button>
+            </Left>
+            <Body>
+              <Text>Notificaciones</Text>
+            </Body>
+            <Right>
+              <Icon active name="arrow-forward" />
+            </Right>
+          </ListItem>
+          
+          <ListItem icon>
+            <Left>
+              <Button style={{ backgroundColor: "#007AFF" }}>
+                <Icon active name="wifi" />
+              </Button>
+            </Left>
+            <Body>
+              <Text>Dispositivo 1</Text>
+            </Body>
+            <Right>
+                <Text>On/Off</Text>
+              <Switch value={false} />
+            </Right>
+          </ListItem>
+          <ListItem icon>
+            <Left>
+              <Button style={{ backgroundColor: "#007AFF" }}>
+                <Icon active name="wifi" />
+              </Button>
+            </Left>
+            <Body>
+              <Text>Dispositivo 2</Text>
+            </Body>
+            <Right>
+              <Text>On/Off</Text>
+              <Switch value={false} />
+            </Right>
+          </ListItem>
+        </Content>
+      </Container>
+        </Container>
   );
 }
 function LogOut({ navigation }) {
@@ -68,6 +129,7 @@ onValueChange={props.onCambio}
 />
 </CardItem>
 );
+
 export default class App extends React.Component{
 state={
   prductos:[],
@@ -78,10 +140,12 @@ state={
      <Tab.Navigator
       initialRouteName="Home"
       tabBarOptions={{
-        activeTintColor: '#e91e63',
+        activeTintColor: '#0D08AB',
+        activeBackgroundColor: '#B5BAB8',
+        allowFontScaling: true
       }}>
-       <Tab.Screen name="Home" component={HomeScreen}  />
-       <Tab.Screen name="Settings" component={SettingsScreen} />
+       <Tab.Screen name="Home"  component={HomeScreen}  />
+       <Tab.Screen name="Settings"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
 
       </Tab.Navigator>
@@ -115,6 +179,9 @@ content:{
   marginTop:10,
   fontSize:19,
   
+},
+settings: {
+  fontSize:32,
 }
 });
 
