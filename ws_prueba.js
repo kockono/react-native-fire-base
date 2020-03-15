@@ -1,17 +1,18 @@
 
  //Conexion a el websocket con lo que el hardware haya lanzado
-var url = "ws://10.42.0.25:80/";
+var url = "ws://192.168.0.11:80/";
 
 var output;
 var button;
 var canvas;
 var context;
- 
+//var intervalo = setInterval(doSend("getRELState"), 1000);
 
 function init() {
+
  
     // ELEMENTOS HTML
-    button = document.getElementById("toggleButton")
+    button = document.getElementById("toggleButton");
     output = document.getElementById("output");
     canvas = document.getElementById("relevador");
     
@@ -33,11 +34,13 @@ function wsConnect(url) {
     
     // Creacion de objeto para conexion y conexion
     websocket = new WebSocket(url);
-    
+    //var intervalo = setInterval(doSend("getRELState"), 1000);
     // eventos de websocket
-    websocket.onopen = function(evt) { onOpen(evt) };
+    websocket.onopen = function(evt) { onOpen(evt)  };
     websocket.onclose = function(evt) { onClose(evt) };
-    websocket.onmessage = function(evt) { onMessage(evt) };
+    websocket.onmessage = function(evt) { onMessage(evt) 
+    var intervalo = setInterval(doSend("getRELState"), 5000);
+};
     websocket.onerror = function(evt) { onError(evt) };
 }
  
@@ -107,7 +110,9 @@ function onPress() {
     doSend("toggleREL");
     doSend("getRELState");
 }
+
  
 // PARA LLAMAR LAS FUNCIONES CUANDO LA VENTANA SE ACTUALICE 
 window.addEventListener("load", init, false);
+//var intervalo = setInterval(doSend("getRELState"), 1000);
 
