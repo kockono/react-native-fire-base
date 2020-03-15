@@ -58,7 +58,7 @@ componentDidMount(){
 
         ):(
           <Stack.Screen
-            name="Home"
+            name="Graficas"
             component={Articles}
           />
         )

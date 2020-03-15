@@ -2,33 +2,95 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
 import {Card, CardItem, Switch, Container, Header, Content, Body, Button, Toast, ListItem, Icon, Left, Right } from 'native-base';
- 
-
-
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from "react-native-chart-kit";
+import { Dimensions } from "react-native";
+const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+const chartConfig = {
+  backgroundGradientFrom: "#1E292D",
+  backgroundGradientFromOpacity: 0,
+  backgroundGradientTo: "#FFFFFF",
+  backgroundGradientToOpacity: 0.5,
+  color: (opacity = 0) => `rgba(0, 0, 146, ${opacity})`,
+  strokeWidth: 2, // optional, default 3
+  barPercentage: 0.5
+};
+
+const data = {
+  labels: ["Gas", "Humeda", "Calidad"], // optional
+  data: [0.4, 0.6, 0.95]
+};
+
+
 function HomeScreen() {
   return (
-      <Container>
-        
-        <Content>
-          <Card>
-            <CardItem>
-              <Body>
-                <Text>
-                   Bienvenido A Ventium
+    <View>
 
-                   Seguridad con amabilidad
+    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal</Text>
+    <LineChart
+      data={{
+        labels: ["January", "February", "March", "April", "May", "June"],
+        datasets: [
+          {
+            data: [
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100
+            ]
+          }
+        ]
+      }}
+      width={Dimensions.get("window").width} // from react-native
+      height={220}
+      yAxisLabel="$"
+      yAxisSuffix="k"
+      yAxisInterval={1} // optional, defaults to 1
+      chartConfig={{
+        backgroundColor: "#e26a00",
+        backgroundGradientFrom: "#fb8c00",
+        backgroundGradientTo: "#ffa726",
+        decimalPlaces: 2, // optional, defaults to 2dp
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        style: {
+          borderRadius: 16
+        },
+        propsForDots: {
+          r: "6",
+          strokeWidth: "2",
+          stroke: "#ffa726"
+        }
+      }}
+      bezier
+      style={{
+        marginVertical: 8,
+        borderRadius: 0
+      }}
+    />
+    <Text style={{padding:3 ,fontSize:20, fontWeight:'bold'}}>Grafica Anillo</Text>
 
-                   En Construcción  
-                </Text>
+    <ProgressChart
+    data={data}
+    width={screenWidth}
+    height={230}
+    chartConfig={chartConfig}
+    hideLegend={false}
+    
+  />
 
-              </Body>
-            </CardItem>
-          </Card>
-        </Content>
-      </Container>
+  </View>
   );
 }
 
@@ -144,7 +206,7 @@ state={
         activeBackgroundColor: '#B5BAB8',
         allowFontScaling: true
       }}>
-       <Tab.Screen name="Home"  component={HomeScreen}  />
+       <Tab.Screen name="Stadisticas"  component={HomeScreen}  />
        <Tab.Screen name="Settings"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
 
@@ -184,6 +246,4 @@ settings: {
   fontSize:32,
 }
 });
-
-
 
