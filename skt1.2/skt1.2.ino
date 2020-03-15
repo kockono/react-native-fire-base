@@ -6,13 +6,13 @@
 #include <ArduinoJson.h>
  
 // Constants
-const char* ssid ="tantive-iv";
-const char* password ="0KOZXOEM";
+const char* ssid ="IZZI UNZUETA";
+const char* password ="6142224915";
 const char *msg_toggle_led = "toggleREL";
 const char *msg_get_led = "getRELState";
 const int sensor=32;
 float sensorValue;
-const int rel_pin=15;
+const int rel_pin=4;
 // Globals
 WebSocketsServer webSocket = WebSocketsServer(80);
 char msg_buf[100];
@@ -134,7 +134,7 @@ void onWebSocketEvent(uint8_t cliente,
 
 //Metodo automatico para activar y desactivar relevador
 int gascosa(){
- if(getSensor()>100){
+ if(getSensor()>300){
   rel_state=0;
 digitalWrite(rel_pin,rel_state);
 
