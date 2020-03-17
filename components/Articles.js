@@ -26,7 +26,7 @@ const chartConfig = {
 };
 
 const data = {
-  labels: ["Gas", "Humeda", "Calidad"], // optional
+  labels: ["Gas", "Humedad", "Calidad"], // optional
   data: [0.4, 0.6, 0.95]
 };
 
@@ -54,8 +54,8 @@ function HomeScreen() {
       }}
       width={Dimensions.get("window").width} // from react-native
       height={220}
-      yAxisLabel="$"
-      yAxisSuffix="k"
+      yAxisLabel=""
+      yAxisSuffix=""
       yAxisInterval={1} // optional, defaults to 1
       chartConfig={{
         backgroundColor: "#e26a00",
@@ -206,7 +206,7 @@ state={
         activeBackgroundColor: '#B5BAB8',
         allowFontScaling: true
       }}>
-       <Tab.Screen name="Stadisticas"  component={HomeScreen}  />
+       <Tab.Screen name="Estadisticas"  component={HomeScreen}  />
        <Tab.Screen name="Settings"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
 
