@@ -1,29 +1,37 @@
-
-
-
-
 //Librerias nesesarias para la funcionacion por wifi con web sockets
 #include <WiFi.h>
 #include <WebSocketsServer.h>
 #include <ArduinoJson.hpp>
 #include <ArduinoJson.h>
-#include <IOXhop_FirebaseESP32.h>
-#include <NTPClient.h>
-#include <WiFiUdp.h>
-//fecha
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP);
-String formattedDate;
-String dayStamp;
-String timeStamp;
-//FIREBASE
+
+#include "time.h"
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = -25200;
+const int   daylightOffset_sec = -25200;
+int second;
+int minute;
+int hour;
+int day;
+int month;
+int year;
+int weekday;
+long current;
+struct tm timeinfo;
+
+
+#include <FirebaseESP32.h>
 #define FIREBASE_HOST "integradora-firebase.firebaseio.com"
 #define FIREBASE_AUTH "0mRiPl63WtUotvjTuZ8ddRyKQ1dBnOHpSQeJHWCl"
+
 String path="/dispositivo";
- 
+FirebaseData firebaseData;  
+
+
+
+
 // Constants
-const char* ssid ="HOME-9A5F";
-const char* password ="34C2C203B9BCC426";
+const char* ssid ="Don Moi";
+const char* password ="chaparro123";
 const char *msg_toggle_led = "toggleREL";
 const char *msg_get_led = "getRELState";
 const int sensor=32;
@@ -57,75 +65,91 @@ void setup() {
   Serial.println("Connected!");
   Serial.print("My IP address: ");
   Serial.println(WiFi.localIP());
- //FIREBASE
- 
-  //3. Set your Firebase info
 
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+   Firebase.reconnectWiFi(true);
 
-  //4. Enable auto reconnect the WiFi when connection lost
-  Firebase.reconnectWiFi(true);
-    timeClient.begin();
-    timeClient.setTimeOffset(25200);
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
   // Iniciar WebSocket server y asignar callback
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
-}
 
-String date(){
-  while(!timeClient.update()) {
-    timeClient.forceUpdate();
+}
+ void printLocalTime()
+{
+
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
   }
-   formattedDate = timeClient.getFormattedTime();
-  Serial.println(formattedDate);
-
-  // Extract date
-  int splitT = formattedDate.indexOf("T");
-  dayStamp = formattedDate.substring(0, splitT);
-  return dayStamp;
-
-}
-
-String hora(){
-   while(!timeClient.update()) {
-    timeClient.forceUpdate();
-  }
-   formattedDate = timeClient.getFormattedTime();
-  Serial.println(formattedDate);
-
-  // Extract date
-  int splitT = formattedDate.indexOf("T");
-  
-  // Extract time
-  timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
-  return timeStamp;
-}
-
-void firebase(){
-  String msg=mensaje();
-Firebase.set( path , msg);
   
 }
+
 void loop() {
  
   //  WebSocket data
+  firebase();
   webSocket.loop();
- firebase();
  
   //Llamado automatico
   
 }
+
+String date()
+{
+  delay(1000);
+  
+  printLocalTime();
+  second = timeinfo.tm_sec;
+  minute = timeinfo.tm_min;
+  hour = timeinfo.tm_hour+7;
+  day = timeinfo.tm_mday;
+  month = timeinfo.tm_mon + 1;
+  year = timeinfo.tm_year + 1900;
+  weekday = timeinfo.tm_wday +1;
+   String hora=String(hour);
+  String minutos=String(minute);
+  String segundos=String(second);
+  String dias=String(day);
+  String mes=String(month);
+  String ano=String(year);
+  String fecha=hora+":"+minutos+":"+segundos+" "+dias+"/"+mes+"/"+ano;
+  //String fecha;
+  return fecha;
+  }
+int primero=1;
+void firebase(){
+String id="1";
+double gas;
+gas=(double)getSensor();
+if(primero==1){
+FirebaseJson json1;
+json1.set(id+"/ppm",gas);
+json1.set(id+"/apagado",gascosa());
+json1.set(id+"/fecha",date());
+Firebase.set(firebaseData, path,json1);
+primero=primero+1;
+}
+else{
+  Firebase.pushDouble(firebaseData,path+"/"+id+"/ppm",gas);
+  Firebase.pushInt(firebaseData,path+"/"+id+"/apagado",gascosa());
+  Firebase.pushString(firebaseData,path+"/"+id+"/fecha",date());
+  
+}
+
+}
+
 //Mensaje json
 String mensaje(){
-const int    capacidad=JSON_OBJECT_SIZE(4);
+const int    capacidad=JSON_OBJECT_SIZE(2);
 StaticJsonDocument<capacidad> doc;
 doc["ppm"]=getSensor();
 doc["apagado"]=gascosa();
-doc["fecha"]=date();
-doc["hora"]=hora();
+
 String  msg;
 serializeJson(doc,msg);
-//Serial.println(msg);
+
 return msg;   
 }
 
@@ -179,11 +203,6 @@ void onWebSocketEvent(uint8_t cliente,
       }else{
        Serial.println("[%u] Message not recognized");
       }
-      /*char letras[100]; 
-        mensaje().toCharArray(letras,100);
-        sprintf(msg_buf,"%s",letras);
-        Serial.printf("enviando to [%u]:%s\n",cliente,msg_buf);
-        webSocket.sendTXT(cliente,msg_buf);*/
       break;
  
     // Todos los tipos de mensaje que se pueden recibir
