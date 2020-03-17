@@ -15,6 +15,7 @@ const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+// --------------------------- Graficas --------------------------------//
 const chartConfig = {
   backgroundGradientFrom: "#1E292D",
   backgroundGradientFromOpacity: 0,
@@ -94,26 +95,11 @@ function HomeScreen() {
   );
 }
 
-function SettingsScreen() {
-  return (
-  <Container>
-          <Container>
-        
-        <Content>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "red" }}>
-                <Icon active name="notifications" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Notificaciones</Text>
-            </Body>
-            <Right>
-              <Icon active name="arrow-forward" />
-            </Right>
-          </ListItem>
-          
+// ---------------------------- Fin De Graficas ------------------ //
+
+const Dispositivo = props => {
+
+  <Content>
           <ListItem icon>
             <Left>
               <Button style={{ backgroundColor: "#007AFF" }}>
@@ -125,28 +111,12 @@ function SettingsScreen() {
             </Body>
             <Right>
                 <Text>On/Off</Text>
-              <Switch value={false} />
-            </Right>
-          </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#007AFF" }}>
-                <Icon active name="wifi" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Dispositivo 2</Text>
-            </Body>
-            <Right>
-              <Text>On/Off</Text>
-              <Switch value={false} />
+              <Switch value={props.check} onValueChange={props.onRene} />
             </Right>
           </ListItem>
         </Content>
-      </Container>
-        </Container>
-  );
 }
+
 function LogOut({ navigation }) {
     React.useEffect(() => {
       const logout = navigation.addListener('focus', e => {
@@ -170,44 +140,71 @@ function LogOut({ navigation }) {
     );
   }
 
-//-------------------
-
-
-// -------------------
-
-
-
 const Tab = createBottomTabNavigator();
 
-// create a component
-const Prod=props=>(
-<CardItem>
-<Text>
-{props.producto.titulo}
-</Text>
-<Switch
-value={props.producto.check}
-onValueChange={props.onCambio}
-/>
-</CardItem>
-);
+
 
 export default class App extends React.Component{
+  
 state={
-  prductos:[],
+  check:0,
 }
+doSend(mss){
+  ws.send(mss);
+
+}
+ranaRene(){
+  doSend("toggleREL")
+}
+SettingsScreen(props) {
+  return (
+  <Container>
+          <Container>
+        <Dispositivo
+        onRene={()=>this.ranaRene()}
+        check={this.state.check}
+        />
+        
+      </Container>
+        </Container>
+  );
+}
+// constructor(){
+//   super();
+//   const URL="ws://192.168.0.0";
+//   const ws = WebSocket(URL);
+// }
+componentDidMount(){
+  console.log("hola")
+  // ws.onopen =()=>{
+  //   this.doSend("getRELState")
+  // }
+  // ws.onclose =()=>{
+  //   console.log("aaaa");
+  // }
+  // ws.onmessage =(e)=>{
+  //   let json=JSON.parse(e.data)
+
+  //   this.setState({
+  //     check:json.apagado
+  //   })
+  //   setInterval(this.doSend("getRELState"),5000)
+
+  // }
+}
+
   render (){
   return(
     
      <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Estadisticas"
       tabBarOptions={{
         activeTintColor: '#0D08AB',
         activeBackgroundColor: '#B5BAB8',
         allowFontScaling: true
       }}>
        <Tab.Screen name="Estadisticas"  component={HomeScreen}  />
-       <Tab.Screen name="Settings"  component={SettingsScreen} />
+       
        <Tab.Screen name="LogOut" component={LogOut}  />
 
       </Tab.Navigator>
@@ -218,7 +215,7 @@ state={
     
 
 
-// define your styles
+// ---------------------------- Estilos -------------------------------//
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -246,4 +243,3 @@ settings: {
   fontSize:32,
 }
 });
-
