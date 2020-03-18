@@ -11,9 +11,10 @@ import {
   StackedBarChart
 } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
-const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import ToggleSwitch from 'toggle-switch-react-native'
+const screenWidth = Dimensions.get("window").width;
 
 const chartConfig = {
   backgroundGradientFrom: "#1E292D",
@@ -94,7 +95,30 @@ function HomeScreen() {
   );
 }
 
+function LogOut({ navigation }) {
+  React.useEffect(() => {
+    const logout = navigation.addListener('focus', e => {
+      // Prevent default behavior
+      //e.preventDefault();
+      firebase.auth().signOut()
+      //Codigo de firebase para logout
+    });
+
+    return logout;
+  }, [navigation]);
+  
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Ya cerraste sesion</Text>
+    
+    </View>
+  );
+}
+
+
 function SettingsScreen() {
+  let Estado = true;
+
   return (
   <Container>
           <Container>
@@ -128,74 +152,38 @@ function SettingsScreen() {
               <Switch value={false} />
             </Right>
           </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#007AFF" }}>
-                <Icon active name="wifi" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Dispositivo 2</Text>
-            </Body>
-            <Right>
-              <Text>On/Off</Text>
-              <Switch value={false} />
-            </Right>
-          </ListItem>
+
+          <TouchableOpacity
+          onPress = { () => this._onPress()}>
+            <Text>Please</Text>
+          </TouchableOpacity>
+
+          <ToggleSwitch
+            isOn={Estado}
+            onColor="green"
+            offColor="red"
+            label="Example label"
+            labelStyle={{ color: "black", fontWeight: "900" }}
+            size="large"
+            onToggle={isOn => console.log( Estado = !Estado)}
+          />
+
         </Content>
       </Container>
         </Container>
   );
 }
-function LogOut({ navigation }) {
-    React.useEffect(() => {
-      const logout = navigation.addListener('focus', e => {
-        // Prevent default behavior
-        //e.preventDefault();
-        firebase.auth().signOut()
-        
-        //Codigo de firebase para logout
-        // Do something manually
-        // ...
-      });
-  
-      return logout;
-    }, [navigation]);
-    
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Ya cerraste sesion</Text>
-      
-      </View>
-    );
-  }
-
-//-------------------
-
-
-// -------------------
-
-
 
 const Tab = createBottomTabNavigator();
 
-// create a component
-const Prod=props=>(
-<CardItem>
-<Text>
-{props.producto.titulo}
-</Text>
-<Switch
-value={props.producto.check}
-onValueChange={props.onCambio}
-/>
-</CardItem>
-);
-
 export default class App extends React.Component{
-state={
-  prductos:[],
-}
+
+  _onPress() {
+    const newState = !this.state.toggle;
+    this.setState({toggle:newState})
+  }
+
+
   render (){
   return(
     
@@ -215,10 +203,10 @@ state={
     }
 }
 
-    
 
 
-// define your styles
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
