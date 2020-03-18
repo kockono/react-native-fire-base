@@ -123,22 +123,19 @@ void firebase(){
 String id="1";
 double gas;
 gas=(double)getSensor();
-if(primero==1){
 FirebaseJson json1;
-json1.set(id+"/ppm",gas);
-json1.set(id+"/apagado",gascosa());
-json1.set(id+"/fecha",date());
-Firebase.set(firebaseData, path,json1);
+FirebaseJsonArray arr;
+arr.set("/ppm",gas);
+arr.set("/apagado",gascosa());
+json1.add(date(),arr);
+Firebase.set(firebaseData, path+"/"+id,json1);
 primero=primero+1;
-}
-else{
-  Firebase.pushDouble(firebaseData,path+"/"+id+"/ppm",gas);
-  Firebase.pushInt(firebaseData,path+"/"+id+"/apagado",gascosa());
-  Firebase.pushString(firebaseData,path+"/"+id+"/fecha",date());
+
+
   
 }
 
-}
+
 
 //Mensaje json
 String mensaje(){
