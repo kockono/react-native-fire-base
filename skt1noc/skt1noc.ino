@@ -30,8 +30,8 @@ FirebaseData firebaseData;
 
 
 // Constants
-const char* ssid ="Don Moi";
-const char* password ="chaparro123";
+const char* ssid ="Angel";
+const char* password ="123456789";
 const char *msg_toggle_led = "toggleREL";
 const char *msg_get_led = "getRELState";
 const int sensor=32;

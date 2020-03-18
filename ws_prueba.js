@@ -109,7 +109,8 @@ function doSend(message) {
 function onPress() {
     doSend("toggleREL");
     doSend("getRELState");
-}
+} 
+
 
  
 // PARA LLAMAR LAS FUNCIONES CUANDO LA VENTANA SE ACTUALICE 
