@@ -23,149 +23,158 @@ struct tm timeinfo;
 #define FIREBASE_HOST "integradora-firebase.firebaseio.com"
 #define FIREBASE_AUTH "0mRiPl63WtUotvjTuZ8ddRyKQ1dBnOHpSQeJHWCl"
 
-String path="/dispositivo";
-FirebaseData firebaseData;  
+String path = "/dispositivos/prototipo01";
+FirebaseData firebaseData;
 
 
 
 
 // Constants
-const char* ssid ="Angel";
-const char* password ="123456789";
+const char* ssid = "HOME-9A5F";
+const char* password = "34C2C203B9BCC426";
 const char *msg_toggle_led = "toggleREL";
 const char *msg_get_led = "getRELState";
-const int sensor=32;
+const int sensor = 32;
 float sensorValue;
-const int rel_pin=4;
+const int rel_pin = 4;
 // Globals
 WebSocketsServer webSocket = WebSocketsServer(80);
 char msg_buf[100];
-int rel_state=0;
+int rel_state = 0;
 
 
 void setup() {
   //Setup sensorer y actuadores
-  pinMode(sensor,INPUT);
- pinMode(rel_pin,OUTPUT);
- rel_state=1;
- digitalWrite(rel_pin,rel_state);
- 
+  pinMode(sensor, INPUT);
+  pinMode(rel_pin, OUTPUT);
+  rel_state = 1;
+  digitalWrite(rel_pin, rel_state);
+
   // Serial port
   Serial.begin(9000);
- 
+
   // Connect to access point
   Serial.println("Connecting");
   WiFi.begin(ssid, password);
   while ( WiFi.status() != WL_CONNECTED ) {
-    delay(500); 
+    delay(500);
     Serial.print(".");
   }
- 
+
   // Imprimir  IP address
   Serial.println("Connected!");
   Serial.print("My IP address: ");
   Serial.println(WiFi.localIP());
 
-   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-   Firebase.reconnectWiFi(true);
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Firebase.reconnectWiFi(true);
 
-    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   printLocalTime();
   // Iniciar WebSocket server y asignar callback
   webSocket.begin();
   webSocket.onEvent(onWebSocketEvent);
 
 }
- void printLocalTime()
+void printLocalTime()
 {
 
-  if(!getLocalTime(&timeinfo)){
+  if (!getLocalTime(&timeinfo)) {
     Serial.println("Failed to obtain time");
     return;
   }
-  
+
 }
 
 void loop() {
- 
+
   //  WebSocket data
   firebase();
   webSocket.loop();
- 
+
   //Llamado automatico
-  
+
 }
 
 String date()
 {
   delay(1000);
-  
+
   printLocalTime();
   second = timeinfo.tm_sec;
   minute = timeinfo.tm_min;
-  hour = timeinfo.tm_hour+7;
+  hour = timeinfo.tm_hour + 7;
   day = timeinfo.tm_mday;
   month = timeinfo.tm_mon + 1;
   year = timeinfo.tm_year + 1900;
-  weekday = timeinfo.tm_wday +1;
-   String hora=String(hour);
-  String minutos=String(minute);
-  String segundos=String(second);
-  String dias=String(day);
-  String mes=String(month);
-  String ano=String(year);
-  String fecha=hora+":"+minutos+":"+segundos+" "+dias+"/"+mes+"/"+ano;
+  weekday = timeinfo.tm_wday + 1;
+  String hora = String(hour);
+  String minutos = String(minute);
+  String segundos = String(second);
+  String dias = String(day);
+  String mes = String(month);
+  String ano = String(year);
+  String fecha = hora + ":" + minutos + ":" + segundos + " " + dias + "/" + mes + "/" + ano;
   //String fecha;
   return fecha;
-  }
-int primero=1;
-void firebase(){
-String id="1";
-double gas;
-gas=(double)getSensor();
-FirebaseJson json1;
-FirebaseJsonArray arr;
-arr.set("/ppm",gas);
-arr.set("/apagado",gascosa());
-json1.add(date(),arr);
-Firebase.set(firebaseData, path+"/"+id,json1);
-primero=primero+1;
-
-
-  
 }
+int primero = 1;
+int id = 1;
+void firebase() {
+  /* {
+    "18042020" : {
+    "apagado" : 1,
+    "ppm" : 20
+    }
+    }*/
+
+  double gas;
+  gas = (double)getSensor();
+  FirebaseJson json1;
+  json1.set("/ppm", gas);
+  json1.set("/apagado", gascosa());
+  json1.set("/fecha", date());
+  Firebase.set(firebaseData, path + "/" + String(id), json1);
+  id = id + 1;
+
+
+}
+
+
+
+
 
 
 
 //Mensaje json
-String mensaje(){
-const int    capacidad=JSON_OBJECT_SIZE(2);
-StaticJsonDocument<capacidad> doc;
-doc["ppm"]=getSensor();
-doc["apagado"]=gascosa();
+String mensaje() {
+  const int    capacidad = JSON_OBJECT_SIZE(2);
+  StaticJsonDocument<capacidad> doc;
+  doc["ppm"] = getSensor();
+  doc["apagado"] = gascosa();
 
-String  msg;
-serializeJson(doc,msg);
+  String  msg;
+  serializeJson(doc, msg);
 
-return msg;   
+  return msg;
 }
 
- // Llamado al recibir los mensajes  WebSocket
+// Llamado al recibir los mensajes  WebSocket
 void onWebSocketEvent(uint8_t cliente,
                       WStype_t type,
                       uint8_t * payload,
                       size_t length) {
- 
-  // control de mensajes 
-  switch(type) {
- 
- 
- //Si el cliente de ha desconectado
+
+  // control de mensajes
+  switch (type) {
+
+
+    //Si el cliente de ha desconectado
     case WStype_DISCONNECTED:
       Serial.printf("[%u] Disconnected!\n", cliente);
       gascosa();
       break;
- 
+
     // New client conectado
     case WStype_CONNECTED:
       {
@@ -174,34 +183,34 @@ void onWebSocketEvent(uint8_t cliente,
         Serial.println(ip.toString());
       }
       break;
- 
-    // Mensaje por parte del cliente         
+
+    // Mensaje por parte del cliente
     case WStype_TEXT:
       Serial.printf("[%u] Text: %s\n", cliente, payload);
       //webSocket.sendTXT(cliente, payload);
       //Prender Relay
-      if(strcmp((char *)payload, "toggleREL")==0){  
-        rel_state=rel_state? 0:1;
-       Serial.printf("Toggling Relevador to %u\n",rel_state);
-        digitalWrite(rel_pin,rel_state);
-       
+      if (strcmp((char *)payload, "toggleREL") == 0) {
+        rel_state = rel_state ? 0 : 1;
+        Serial.printf("Toggling Relevador to %u\n", rel_state);
+        digitalWrite(rel_pin, rel_state);
+
         //if(rel_state==0){
-          //digitalWrite(rel_pin,HIGH);
+        //digitalWrite(rel_pin,HIGH);
         //}
         //else if (rel_state==1){
-          //digitalWrite(rel_pin,LOW);
-       // }
-      }else if(strcmp((char *)payload ,"getRELState")==0){
-        char letras[100]; 
-        mensaje().toCharArray(letras,100);
-        sprintf(msg_buf,"%s",letras);
-        Serial.printf("enviando to [%u]:%s\n",cliente,msg_buf);
-        webSocket.sendTXT(cliente,msg_buf);
-      }else{
-       Serial.println("[%u] Message not recognized");
+        //digitalWrite(rel_pin,LOW);
+        // }
+      } else if (strcmp((char *)payload , "getRELState") == 0) {
+        char letras[100];
+        mensaje().toCharArray(letras, 100);
+        sprintf(msg_buf, "%s", letras);
+        Serial.printf("enviando to [%u]:%s\n", cliente, msg_buf);
+        webSocket.sendTXT(cliente, msg_buf);
+      } else {
+        Serial.println("[%u] Message not recognized");
       }
       break;
- 
+
     // Todos los tipos de mensaje que se pueden recibir
     case WStype_BIN:
     case WStype_ERROR:
@@ -215,17 +224,17 @@ void onWebSocketEvent(uint8_t cliente,
 }
 
 //Metodo automatico para activar y desactivar relevador
-int gascosa(){
- if(getSensor()>300){
-  rel_state=0;
-digitalWrite(rel_pin,rel_state);
+int gascosa() {
+  if (getSensor() > 300) {
+    rel_state = 0;
+    digitalWrite(rel_pin, rel_state);
 
- }
- return rel_state;
+  }
+  return rel_state;
 }
 
-float getSensor(){
-  sensorValue=analogRead(sensor);
+float getSensor() {
+  sensorValue = analogRead(sensor);
   return sensorValue;
-    
+
 }
