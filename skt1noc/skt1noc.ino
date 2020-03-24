@@ -71,9 +71,7 @@ void setup() {
 
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   printLocalTime();
-  // Iniciar WebSocket server y asignar callback
-  webSocket.begin();
-  webSocket.onEvent(onWebSocketEvent);
+
 
 }
 void printLocalTime()
@@ -90,9 +88,25 @@ void loop() {
 
   //  WebSocket data
   firebase();
-  webSocket.loop();
+  realtime();
+  Actuar();
+ // webSocket.loop();
 
   //Llamado automatico
+
+}
+int gascosa() {
+  if (getSensor() > 300) {
+    rel_state = 0;
+    digitalWrite(rel_pin, rel_state);
+
+  }
+  return rel_state;
+}
+
+float getSensor() {
+  sensorValue = analogRead(sensor);
+  return sensorValue;
 
 }
 
@@ -120,6 +134,16 @@ String date()
 }
 int primero = 1;
 int id = 1;
+void realtime(){
+  double gas;
+  gas = (double)getSensor();
+  FirebaseJson json1;
+  json1.set("/ppm", gas);
+  json1.set("/apagado", gascosa());
+  //json1.set("/fecha", date());
+  Firebase.set(firebaseData, path + "/realtime/0", json1);
+  
+}
 void firebase() {
   /* {
     "18042020" : {
@@ -134,13 +158,37 @@ void firebase() {
   json1.set("/ppm", gas);
   json1.set("/apagado", gascosa());
   json1.set("/fecha", date());
-  Firebase.set(firebaseData, path + "/" + String(id), json1);
+  Firebase.set(firebaseData, path + "/datos/" + String(id), json1);
   id = id + 1;
 
 
 }
 
+void Actuar(){
+    if (Firebase.getInt(firebaseData, path+"/realtime/0/apagado")) 
+    {
 
+      if (firebaseData.dataType() == "int") 
+      {
+        if(firebaseData.intData()==1)
+         {
+            rel_state=1;
+            digitalWrite(rel_pin, rel_state);
+        }
+        else
+        {
+          rel_state=0;
+        digitalWrite(rel_pin, rel_state);
+      
+        }
+      }
+
+  } 
+  else 
+  {
+    Serial.println(firebaseData.errorReason());
+  }
+}
 
 
 
@@ -159,8 +207,8 @@ String mensaje() {
   return msg;
 }
 
-// Llamado al recibir los mensajes  WebSocket
-void onWebSocketEvent(uint8_t cliente,
+
+/*void onWebSocketEvent(uint8_t cliente,
                       WStype_t type,
                       uint8_t * payload,
                       size_t length) {
@@ -221,20 +269,6 @@ void onWebSocketEvent(uint8_t cliente,
     default:
       break;
   }
-}
+}*/
 
 //Metodo automatico para activar y desactivar relevador
-int gascosa() {
-  if (getSensor() > 300) {
-    rel_state = 0;
-    digitalWrite(rel_pin, rel_state);
-
-  }
-  return rel_state;
-}
-
-float getSensor() {
-  sensorValue = analogRead(sensor);
-  return sensorValue;
-
-}
