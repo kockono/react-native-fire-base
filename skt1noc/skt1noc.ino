@@ -86,22 +86,23 @@ void printLocalTime()
 
 void loop() {
 
-  //  WebSocket data
   firebase();
-  realtime();
+  
   Actuar();
- // webSocket.loop();
 
-  //Llamado automatico
+if(getSensor()>350){
+  rel_state=0;
+}
+  realtime();
+
 
 }
-int gascosa() {
+void gascosa() {
   if (getSensor() > 300) {
     rel_state = 0;
     digitalWrite(rel_pin, rel_state);
 
   }
-  return rel_state;
 }
 
 float getSensor() {
@@ -139,7 +140,7 @@ void realtime(){
   gas = (double)getSensor();
   FirebaseJson json1;
   json1.set("/ppm", gas);
-  json1.set("/apagado", gascosa());
+  json1.set("/apagado", rel_state);
   //json1.set("/fecha", date());
   Firebase.set(firebaseData, path + "/realtime/0", json1);
   
@@ -156,7 +157,7 @@ void firebase() {
   gas = (double)getSensor();
   FirebaseJson json1;
   json1.set("/ppm", gas);
-  json1.set("/apagado", gascosa());
+  json1.set("/apagado", rel_state);
   json1.set("/fecha", date());
   Firebase.set(firebaseData, path + "/datos/" + String(id), json1);
   id = id + 1;
@@ -168,20 +169,20 @@ void Actuar(){
     if (Firebase.getInt(firebaseData, path+"/realtime/0/apagado")) 
     {
 
-      if (firebaseData.dataType() == "int") 
-      {
+     
+        Serial.println(firebaseData.intData());
         if(firebaseData.intData()==1)
          {
             rel_state=1;
             digitalWrite(rel_pin, rel_state);
         }
-        else
+        else if(firebaseData.intData()==0)
         {
           rel_state=0;
         digitalWrite(rel_pin, rel_state);
       
         }
-      }
+      
 
   } 
   else 
@@ -194,18 +195,7 @@ void Actuar(){
 
 
 
-//Mensaje json
-String mensaje() {
-  const int    capacidad = JSON_OBJECT_SIZE(2);
-  StaticJsonDocument<capacidad> doc;
-  doc["ppm"] = getSensor();
-  doc["apagado"] = gascosa();
 
-  String  msg;
-  serializeJson(doc, msg);
-
-  return msg;
-}
 
 
 /*void onWebSocketEvent(uint8_t cliente,
