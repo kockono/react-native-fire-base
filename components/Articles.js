@@ -14,6 +14,11 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { conexionOnline} from '../config/db';
+
+const app = firebase.initializeApp(conexionOnline);
+const db = app.database();
+
 
 const chartConfig = {
   backgroundGradientFrom: "#1E292D",
@@ -128,20 +133,6 @@ function SettingsScreen() {
               <Switch value={false} />
             </Right>
           </ListItem>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#007AFF" }}>
-                <Icon active name="wifi" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Dispositivo 2</Text>
-            </Body>
-            <Right>
-              <Text>On/Off</Text>
-              <Switch value={false} />
-            </Right>
-          </ListItem>
         </Content>
       </Container>
         </Container>
@@ -153,10 +144,7 @@ function LogOut({ navigation }) {
         // Prevent default behavior
         //e.preventDefault();
         firebase.auth().signOut()
-        
-        //Codigo de firebase para logout
-        // Do something manually
-        // ...
+
       });
   
       return logout;
@@ -169,13 +157,6 @@ function LogOut({ navigation }) {
       </View>
     );
   }
-
-//-------------------
-
-
-// -------------------
-
-
 
 const Tab = createBottomTabNavigator();
 
@@ -196,6 +177,24 @@ export default class App extends React.Component{
 state={
   prductos:[],
 }
+
+  componentDidMount() {
+    setInterval(() => {
+    db.ref('dispositivos/prototipo01/realtime/0').on('value',(snapshot)=> {
+      const userObj = snapshot.val();     
+      window.lat=userObj.apagado;
+      window.lon=userObj.ppm;
+  });
+    this.setState({
+      latitud:window.lat,
+      longitud:window.lon
+      
+    })
+        console.log("La lati final es:"+this.state.latitud)
+        console.log("La long final es:"+this.state.longitud)}, 1000);
+}
+
+
   render (){
   return(
     
@@ -207,16 +206,13 @@ state={
         allowFontScaling: true
       }}>
        <Tab.Screen name="Estadisticas"  component={HomeScreen}  />
-       <Tab.Screen name="Settings"  component={SettingsScreen} />
+       <Tab.Screen name="Ajustes"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
 
       </Tab.Navigator>
       )
     }
 }
-
-    
-
 
 // define your styles
 const styles = StyleSheet.create({
