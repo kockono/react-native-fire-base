@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
 import {Card, CardItem, Switch, Container, Header, Content, Body, Button, Toast, ListItem, Icon, Left, Right } from 'native-base';
@@ -36,68 +35,14 @@ const data = {
 };
 
 
-function HomeScreen() {
-  return (
-    <View>
 
-    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal</Text>
-    <LineChart
-      data={{
-        labels: ["January", "February", "March", "April", "May", "June"],
-        datasets: [
-          {
-            data: [
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100
-            ]
-          }
-        ]
-      }}
-      width={Dimensions.get("window").width} // from react-native
-      height={220}
-      yAxisLabel=""
-      yAxisSuffix=""
-      yAxisInterval={1} // optional, defaults to 1
-      chartConfig={{
-        backgroundColor: "#e26a00",
-        backgroundGradientFrom: "#fb8c00",
-        backgroundGradientTo: "#ffa726",
-        decimalPlaces: 2, // optional, defaults to 2dp
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 16
-        },
-        propsForDots: {
-          r: "6",
-          strokeWidth: "2",
-          stroke: "#ffa726"
-        }
-      }}
-      bezier
-      style={{
-        marginVertical: 8,
-        borderRadius: 0
-      }}
-    />
-    <Text style={{padding:3 ,fontSize:20, fontWeight:'bold'}}>Grafica Anillo</Text>
-
-    <ProgressChart
-    data={data}
-    width={screenWidth}
-    height={230}
-    chartConfig={chartConfig}
-    hideLegend={false}
-    
-  />
-
-  </View>
-  );
-}
+  //   <ProgressChart
+  //   data={data}
+  //   width={screenWidth}
+  //   height={230}
+  //   chartConfig={chartConfig}
+  //   hideLegend={false}
+  // />
 
 function SettingsScreen() {
   return (
@@ -160,23 +105,72 @@ function LogOut({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-// create a component
-const Prod=props=>(
-<CardItem>
-<Text>
-{props.producto.titulo}
-</Text>
-<Switch
-value={props.producto.check}
-onValueChange={props.onCambio}
-/>
-</CardItem>
-);
+
+function HomeScreen({navigation, route}) {
+
+  let  lat  = route.params.latitud;
+  let long  = route.params.longitud;
+
+ setInterval(() => {
+  console.log("La lati final es:"+JSON.stringify(long))
+ },5000);
+  return (
+    <View>
+
+    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal</Text>
+    <LineChart
+      data={{
+        labels: ["January", "February", "March", "April", "May", "June"],
+        datasets: [
+          {
+            data: [
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100,
+              Math.random() * 100
+            ]
+          }
+        ]
+      }}
+      width={Dimensions.get("window").width} // from react-native
+      height={220}
+      yAxisLabel=""
+      yAxisSuffix=""
+      yAxisInterval={1} // optional, defaults to 1
+      chartConfig={{
+        backgroundColor: "#e26a00",
+        backgroundGradientFrom: "#fb8c00",
+        backgroundGradientTo: "#ffa726",
+        decimalPlaces: 2, // optional, defaults to 2dp
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        style: {
+          borderRadius: 16
+        },
+        propsForDots: {
+          r: "6",
+          strokeWidth: "2",
+          stroke: "#ffa726"
+        }
+      }}
+      bezier
+      style={{
+        marginVertical: 8,
+        borderRadius: 0
+      }}
+    />
+    <Text>latitud: {JSON.stringify(lat)}</Text>
+      <Text>longitud: {JSON.stringify(long)}</Text>
+
+    
+
+  </View>
+  );
+}
 
 export default class App extends React.Component{
-state={
-  prductos:[],
-}
 
   componentDidMount() {
     setInterval(() => {
@@ -190,9 +184,11 @@ state={
       longitud:window.lon
       
     })
-        console.log("La lati final es:"+this.state.latitud)
-        console.log("La long final es:"+this.state.longitud)}, 1000);
+       }, 10000);
 }
+
+//  console.log("La lati final es:"+this.state.latitud)
+//         console.log("La long final es:"+this.state.longitud)
 
 
   render (){
@@ -205,14 +201,15 @@ state={
         activeBackgroundColor: '#B5BAB8',
         allowFontScaling: true
       }}>
-       <Tab.Screen name="Estadisticas"  component={HomeScreen}  />
+       <Tab.Screen name="Estadisticas"  component={HomeScreen}  initialParams={{ latitud: this.state.latitud, longitud: this.state.longitud}}/>
        <Tab.Screen name="Ajustes"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
-
       </Tab.Navigator>
       )
     }
 }
+
+
 
 // define your styles
 const styles = StyleSheet.create({
