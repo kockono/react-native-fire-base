@@ -1,32 +1,10 @@
-// import * as firebase from 'firebase';
-// import firestore from 'firebase/firestore'
-
-// const settings = {timestampsInSnapshots: true};
-
-// const config = {
-//     apiKey: "AIzaSyAwdTmnifxowX69lBRkz378jeAli049z-s",
-//     authDomain: "integradora-firebase.firebaseapp.com",
-//     databaseURL: "https://integradora-firebase.firebaseio.com",
-//     projectId: "integradora-firebase",
-//     storageBucket: "integradora-firebase.appspot.com",
-//     messagingSenderId: "575456618001",
-//     appId: "1:575456618001:web:5157e6a7753731250973b0"
-// };
-// firebase.initializeApp(config);
-
-// firebase.firestore().settings(settings);
-
-// export default firebase;
-
 export let firebaseConfig = {
-    apiKey: "AIzaSyAwdTmnifxowX69lBRkz378jeAli049z-s",
-    authDomain: "integradora-firebase.firebaseapp.com",
-    databaseURL: "https://integradora-firebase.firebaseio.com",
-    projectId: "integradora-firebase",
-    storageBucket: "integradora-firebase.appspot.com",
-    messagingSenderId: "575456618001",
-    appId: "1:575456618001:web:5157e6a7753731250973b0"
-
+  apiKey: "AIzaSyA6t-stBQ0T4cYm35iPI_3-RbpeAFVLjuE",
+  authDomain: "integradora-64ddd.firebaseapp.com",
+  databaseURL: "https://integradora-64ddd.firebaseio.com",
+  projectId: "integradora-64ddd",
+  storageBucket: "integradora-64ddd.appspot.com",
+  messagingSenderId: "966949988543",
+  appId: "1:966949988543:web:eedf1094f211f3c6cb7e0a"
   };
-  // Initialize Firebase
-//   firebase.initializeApp(firebaseConfig);
+

@@ -1,8 +1,5 @@
 //Librerias nesesarias para la funcionacion por wifi con web sockets
 #include <WiFi.h>
-#include <WebSocketsServer.h>
-#include <ArduinoJson.hpp>
-#include <ArduinoJson.h>
 
 #include "time.h"
 const char* ntpServer = "pool.ntp.org";
@@ -20,8 +17,8 @@ struct tm timeinfo;
 
 
 #include <FirebaseESP32.h>
-#define FIREBASE_HOST "integradora-firebase.firebaseio.com"
-#define FIREBASE_AUTH "0mRiPl63WtUotvjTuZ8ddRyKQ1dBnOHpSQeJHWCl"
+#define FIREBASE_HOST "integradora-64ddd.firebaseio.com"
+#define FIREBASE_AUTH "IaQ9xXV5HqkLlghXS8GnfROVfFlqTtRqUzsnJPri"
 
 String path = "/dispositivos/prototipo01";
 FirebaseData firebaseData;
@@ -32,14 +29,10 @@ FirebaseData firebaseData;
 // Constants
 const char* ssid = "HOME-9A5F";
 const char* password = "34C2C203B9BCC426";
-const char *msg_toggle_led = "toggleREL";
-const char *msg_get_led = "getRELState";
 const int sensor = 32;
 float sensorValue;
 const int rel_pin = 4;
-// Globals
-WebSocketsServer webSocket = WebSocketsServer(80);
-char msg_buf[100];
+
 int rel_state = 0;
 
 
@@ -65,15 +58,18 @@ void setup() {
   Serial.println("Connected!");
   Serial.print("My IP address: ");
   Serial.println(WiFi.localIP());
-
+//conexion a base de datos
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
-
+  
+//configuracion de cliente nps para obtener el tiempo
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   printLocalTime();
 
 
 }
+
+//iniciacion de hora actual 
 void printLocalTime()
 {
 
@@ -85,11 +81,12 @@ void printLocalTime()
 }
 
 void loop() {
-
+//llamado de metodos
   firebase();
   
   Actuar();
-
+  
+//actuacion automatica si existe una fuga
 if(getSensor()>350){
   rel_state=0;
 }
@@ -97,20 +94,16 @@ if(getSensor()>350){
 
 
 }
-void gascosa() {
-  if (getSensor() > 300) {
-    rel_state = 0;
-    digitalWrite(rel_pin, rel_state);
 
-  }
-}
 
+//obtiene el valor del sensor
 float getSensor() {
   sensorValue = analogRead(sensor);
   return sensorValue;
 
 }
 
+//creacion del formato de fecha para guardar el dato en la tabla datos 
 String date()
 {
   delay(1000);
@@ -133,8 +126,12 @@ String date()
   //String fecha;
   return fecha;
 }
+
+//variables de control para elo metodo firebase()
 int primero = 1;
 int id = 1;
+
+//este metodo guarda a la tabla real time en tiempo real los nuevos datos de el sensor y si la electrovalvula esta apagada o encendida
 void realtime(){
   double gas;
   gas = (double)getSensor();
@@ -145,13 +142,10 @@ void realtime(){
   Firebase.set(firebaseData, path + "/realtime/0", json1);
   
 }
+
+//este metodo guarda nuevos datos a la base de datos firebase en la tabla datos creando un json
 void firebase() {
-  /* {
-    "18042020" : {
-    "apagado" : 1,
-    "ppm" : 20
-    }
-    }*/
+
 
   double gas;
   gas = (double)getSensor();
@@ -165,6 +159,7 @@ void firebase() {
 
 }
 
+//este metodo toma los datos de la base de datos y comprueba si la electrovalvula se tiene que apagar o prender 
 void Actuar(){
     if (Firebase.getInt(firebaseData, path+"/realtime/0/apagado")) 
     {
@@ -190,75 +185,3 @@ void Actuar(){
     Serial.println(firebaseData.errorReason());
   }
 }
-
-
-
-
-
-
-
-
-/*void onWebSocketEvent(uint8_t cliente,
-                      WStype_t type,
-                      uint8_t * payload,
-                      size_t length) {
-
-  // control de mensajes
-  switch (type) {
-
-
-    //Si el cliente de ha desconectado
-    case WStype_DISCONNECTED:
-      Serial.printf("[%u] Disconnected!\n", cliente);
-      gascosa();
-      break;
-
-    // New client conectado
-    case WStype_CONNECTED:
-      {
-        IPAddress ip = webSocket.remoteIP(cliente);
-        Serial.printf("[%u] Connection from ", cliente);
-        Serial.println(ip.toString());
-      }
-      break;
-
-    // Mensaje por parte del cliente
-    case WStype_TEXT:
-      Serial.printf("[%u] Text: %s\n", cliente, payload);
-      //webSocket.sendTXT(cliente, payload);
-      //Prender Relay
-      if (strcmp((char *)payload, "toggleREL") == 0) {
-        rel_state = rel_state ? 0 : 1;
-        Serial.printf("Toggling Relevador to %u\n", rel_state);
-        digitalWrite(rel_pin, rel_state);
-
-        //if(rel_state==0){
-        //digitalWrite(rel_pin,HIGH);
-        //}
-        //else if (rel_state==1){
-        //digitalWrite(rel_pin,LOW);
-        // }
-      } else if (strcmp((char *)payload , "getRELState") == 0) {
-        char letras[100];
-        mensaje().toCharArray(letras, 100);
-        sprintf(msg_buf, "%s", letras);
-        Serial.printf("enviando to [%u]:%s\n", cliente, msg_buf);
-        webSocket.sendTXT(cliente, msg_buf);
-      } else {
-        Serial.println("[%u] Message not recognized");
-      }
-      break;
-
-    // Todos los tipos de mensaje que se pueden recibir
-    case WStype_BIN:
-    case WStype_ERROR:
-    case WStype_FRAGMENT_TEXT_START:
-    case WStype_FRAGMENT_BIN_START:
-    case WStype_FRAGMENT:
-    case WStype_FRAGMENT_FIN:
-    default:
-      break;
-  }
-}*/
-
-//Metodo automatico para activar y desactivar relevador
