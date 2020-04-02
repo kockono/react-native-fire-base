@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import App from "../App";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Card, Button, Form } from 'react-bootstrap';
 import Switch from 'react-switch';
+import './a.css'
 
 class Esp32 extends Component {
     
@@ -56,15 +55,15 @@ class Esp32 extends Component {
 
         const {messages} = this.state;
         const messagesList = messages.map(message => {
-            return <div><li key={message.id}>   {message.ppm}</li>Apagado: {message.apagado}</div>
+            return <div><h2> Cantidad de gas en el ambiente: {message.ppm}ppm</h2>  <h2>Valvula: {message.apagado===1?"on":"off"}</h2></div>
 
         })
 
         return(
-            <div>
-                <ol>
-                    {messagesList}
-                </ol>
+            <div class ="division">
+                <h1>Calidad de gas</h1>
+                <div> {messagesList}</div>
+       
                    <Switch
                    onChange={this.handleChange}
                    checked={this.state.checked}
