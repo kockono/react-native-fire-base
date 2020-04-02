@@ -14,9 +14,10 @@ const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { conexionOnline} from '../config/db';
+import HomeScreen from './home';
 
-const app = firebase.initializeApp(conexionOnline);
-const db = app.database();
+// const app = firebase.initializeApp(conexionOnline);
+// const db = app.database();
 
 
 const chartConfig = {
@@ -34,15 +35,6 @@ const data = {
   data: [0.4, 0.6, 0.95]
 };
 
-
-
-  //   <ProgressChart
-  //   data={data}
-  //   width={screenWidth}
-  //   height={230}
-  //   chartConfig={chartConfig}
-  //   hideLegend={false}
-  // />
 
 function SettingsScreen() {
   return (
@@ -105,15 +97,9 @@ function LogOut({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-
+/*
 function HomeScreen({navigation, route}) {
 
-  let  lat  = route.params.latitud;
-  let long  = route.params.longitud;
-
- setInterval(() => {
-  console.log("La lati final es:"+JSON.stringify(long))
- },5000);
   return (
     <View>
 
@@ -161,34 +147,11 @@ function HomeScreen({navigation, route}) {
         borderRadius: 0
       }}
     />
-    <Text>latitud: {JSON.stringify(lat)}</Text>
-      <Text>longitud: {JSON.stringify(long)}</Text>
-
-    
-
   </View>
   );
-}
+}*/
 
-export default class App extends React.Component{
-
-  componentDidMount() {
-    setInterval(() => {
-    db.ref('dispositivos/prototipo01/realtime/0').on('value',(snapshot)=> {
-      const userObj = snapshot.val();     
-      window.lat=userObj.apagado;
-      window.lon=userObj.ppm;
-  });
-    this.setState({
-      latitud:window.lat,
-      longitud:window.lon
-      
-    })
-       }, 10000);
-}
-
-//  console.log("La lati final es:"+this.state.latitud)
-//         console.log("La long final es:"+this.state.longitud)
+export default class App extends React.Component {
 
 
   render (){
@@ -201,7 +164,7 @@ export default class App extends React.Component{
         activeBackgroundColor: '#B5BAB8',
         allowFontScaling: true
       }}>
-       <Tab.Screen name="Estadisticas"  component={HomeScreen}  initialParams={{ latitud: this.state.latitud, longitud: this.state.longitud}}/>
+       <Tab.Screen name="Home"  component={HomeScreen}/>
        <Tab.Screen name="Ajustes"  component={SettingsScreen} />
        <Tab.Screen name="LogOut" component={LogOut}  />
       </Tab.Navigator>
