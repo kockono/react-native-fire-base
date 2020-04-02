@@ -39,21 +39,34 @@ state = {
       window.lat=userObj.apagado;
       window.lon=userObj.ppm;
   });
+  if(window.lon === undefined){
+        this.setState({
+        longitud:0
+            })
+  }else{
     this.setState({
       latitud:window.lat,
       longitud:window.lon
       
         })
+  }
+        console.log(typeof(this.state.latitud))
         console.log("La lati final es:"+this.state.latitud)
-        console.log("La long final es:"+this.state.longitud)}, 1000);
+        console.log("La long final es:"+this.state.longitud)}, 5000);
 }
 
 render() {
 
+// if(this.state.longitud === undefined){
+//     this.setState({
+//         longitud:0
+//     })
+// }
+let long = this.state.longitud;
 return (
     <View>
 
-    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal{this.state.longitud}</Text>
+    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal</Text>
     <LineChart
       data={{
         labels: ["January", "February", "March", "April", "May", "June"],
@@ -65,7 +78,7 @@ return (
               Math.random() * 100,
               Math.random() * 100,
               Math.random() * 100,
-              Math.random() * 100
+              long
             ]
           }
         ]
