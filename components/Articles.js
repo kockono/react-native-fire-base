@@ -15,9 +15,7 @@ import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { conexionOnline} from '../config/db';
 import HomeScreen from './home';
-
-// const app = firebase.initializeApp(conexionOnline);
-// const db = app.database();
+import SettingsScreen from './Settings'
 
 
 const chartConfig = {
@@ -36,45 +34,7 @@ const data = {
 };
 
 
-function SettingsScreen() {
-  return (
-  <Container>
-          <Container>
-        
-        <Content>
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "red" }}>
-                <Icon active name="notifications" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Notificaciones</Text>
-            </Body>
-            <Right>
-              <Icon active name="arrow-forward" />
-            </Right>
-          </ListItem>
-          
-          <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "#007AFF" }}>
-                <Icon active name="wifi" />
-              </Button>
-            </Left>
-            <Body>
-              <Text>Dispositivo 1</Text>
-            </Body>
-            <Right>
-                <Text>On/Off</Text>
-              <Switch value={false} />
-            </Right>
-          </ListItem>
-        </Content>
-      </Container>
-        </Container>
-  );
-}
+
 function LogOut({ navigation }) {
     React.useEffect(() => {
       const logout = navigation.addListener('focus', e => {
@@ -97,59 +57,6 @@ function LogOut({ navigation }) {
 
 const Tab = createBottomTabNavigator();
 
-/*
-function HomeScreen({navigation, route}) {
-
-  return (
-    <View>
-
-    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Grafica Lineal</Text>
-    <LineChart
-      data={{
-        labels: ["January", "February", "March", "April", "May", "June"],
-        datasets: [
-          {
-            data: [
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100,
-              Math.random() * 100
-            ]
-          }
-        ]
-      }}
-      width={Dimensions.get("window").width} // from react-native
-      height={220}
-      yAxisLabel=""
-      yAxisSuffix=""
-      yAxisInterval={1} // optional, defaults to 1
-      chartConfig={{
-        backgroundColor: "#e26a00",
-        backgroundGradientFrom: "#fb8c00",
-        backgroundGradientTo: "#ffa726",
-        decimalPlaces: 2, // optional, defaults to 2dp
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 16
-        },
-        propsForDots: {
-          r: "6",
-          strokeWidth: "2",
-          stroke: "#ffa726"
-        }
-      }}
-      bezier
-      style={{
-        marginVertical: 8,
-        borderRadius: 0
-      }}
-    />
-  </View>
-  );
-}*/
 
 export default class App extends React.Component {
 

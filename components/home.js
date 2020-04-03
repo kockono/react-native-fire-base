@@ -5,10 +5,10 @@ import { Dimensions } from "react-native";
 const screenWidth = Dimensions.get("window").width;
 import firebase from 'firebase';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { conexionOnline} from '../config/db';
+import { db } from '../config/db';
 
-const app = firebase.initializeApp(conexionOnline);
-const db = app.database();
+
+
 
 const chartConfig = {
   backgroundGradientFrom: "#1E292D",
@@ -28,41 +28,34 @@ const data = {
 export default class HomeScreen extends Component {
 
 state = {
-    latitud:0,
-    longitud:0
+    estado:0,
+    ppm:0
 }
 
   componentDidMount() {
     setInterval(() => {
     db.ref('dispositivos/prototipo01/realtime/0').on('value',(snapshot)=> {
       const userObj = snapshot.val();     
-      window.lat=userObj.apagado;
-      window.lon=userObj.ppm;
+      window.estado=userObj.apagado;
+      window.ppm=userObj.ppm;
   });
-  if(window.lon === undefined){
+  if(window.ppm === undefined){
         this.setState({
-        longitud:0
+        ppm:0
             })
   }else{
     this.setState({
-      latitud:window.lat,
-      longitud:window.lon
+      estado:window.estado,
+      ppm:window.ppm
       
         })
   }
-        console.log(typeof(this.state.latitud))
-        console.log("La lati final es:"+this.state.latitud)
-        console.log("La long final es:"+this.state.longitud)}, 5000);
+       }, 7500);
 }
 
 render() {
 
-// if(this.state.longitud === undefined){
-//     this.setState({
-//         longitud:0
-//     })
-// }
-let long = this.state.longitud;
+let long = this.state.ppm;
 return (
     <View>
 
@@ -110,8 +103,8 @@ return (
         borderRadius: 0
       }}
     />
-    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Longitud: {this.state.longitud}</Text>
-    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Estado: {this.state.latitud}</Text>
+    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>ppm: {this.state.ppm}</Text>
+    <Text style={{padding: 3,fontSize:20, fontWeight:'bold'}}>Estado: {this.state.estado}</Text>
 
   </View>
   );
