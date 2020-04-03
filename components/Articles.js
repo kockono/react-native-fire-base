@@ -56,8 +56,6 @@ function LogOut({ navigation }) {
 const Tab = createBottomTabNavigator();
 
 
-const Tab = createBottomTabNavigator();
-
 export default class App extends React.Component {
 
   render (){
